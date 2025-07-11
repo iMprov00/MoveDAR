@@ -4,3 +4,4 @@ hospitalization.db-wal
 db/schema.rb
 db/migrate/20250711064551_create_appointments.rb
 hospitalization.db
+db/migrate/20250711075830_add_registered_to_appointments.rb

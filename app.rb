@@ -165,3 +165,34 @@ def save_to_database(data, appointment_date)
     )
   end
 end
+
+
+
+# Страница регистратуры
+get '/registration' do
+  @selected_date = params[:selected_date] ? Date.parse(params[:selected_date]) : Date.today
+  @patients = Appointment.where(appointment_date: @selected_date, registered_at: nil).order(:appointment_time)
+  erb :registration
+end
+
+# Обработка отметки пациента
+post '/register_patient' do
+  appointment = Appointment.find(params[:patient_id])
+  
+  if params[:current_time] == '1'
+    registration_time = Time.now.strftime('%H:%M')
+  else
+    registration_time = params[:custom_time]
+  end
+
+  if appointment.update(
+    registered_at: Time.now,
+    registration_time: registration_time
+  )
+    session[:success_message] = "#{appointment.full_name} успешно отмечен(а) в регистратуре в #{registration_time}"
+  else
+    session[:error_message] = "Ошибка при отметке пациента"
+  end
+  
+  redirect "/registration?selected_date=#{params[:selected_date]}"
+end
