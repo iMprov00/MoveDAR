@@ -228,3 +228,11 @@ post '/mark_doctor_visit' do
   
   redirect "/doctor?selected_date=#{params[:selected_date]}"
 end
+
+
+# Страница отчета
+get '/report' do
+  @selected_date = params[:selected_date] ? Date.parse(params[:selected_date]) : Date.today
+  @patients = Appointment.where(appointment_date: @selected_date).order(:appointment_time)
+  erb :report
+end

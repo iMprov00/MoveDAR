@@ -98,3 +98,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+
+
+
+// Для страницы отчета
+document.addEventListener('DOMContentLoaded', function() {
+  // Инициализация datepicker
+  const reportDateFilter = document.getElementById('date-filter');
+  if (reportDateFilter) {
+    flatpickr(reportDateFilter, {
+      dateFormat: 'd.m.Y',
+      locale: 'ru',
+      allowInput: true,
+      defaultDate: reportDateFilter.value,
+      onChange: function(selectedDates, dateStr) {
+        const url = this.element.dataset.url;
+        const selectedDate = dateStr.split('.').reverse().join('-');
+        window.location.href = `${url}?selected_date=${selectedDate}`;
+      }
+    });
+  }
+
+  // Кнопка печати
+  const printBtn = document.getElementById('print-report');
+  if (printBtn) {
+    printBtn.addEventListener('click', function() {
+      window.print();
+    });
+  }
+});

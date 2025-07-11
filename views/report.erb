@@ -1,0 +1,79 @@
+<div class="row justify-content-center">
+  <div class="col-md-12">
+    <div class="card shadow-sm mb-4 border-secondary">
+      <div class="card-header bg-secondary text-white">
+        <h4 class="mb-0">Отчет по пациентам за <%= @selected_date.strftime('%d.%m.%Y') %></h4>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label for="date-filter" class="form-label">Дата отчета</label>
+            <input type="text" 
+                   class="form-control datepicker" 
+                   id="date-filter" 
+                   value="<%= @selected_date.strftime('%d.%m.%Y') %>"
+                   data-url="/report">
+          </div>
+          <div class="col-md-6 d-flex align-items-end">
+            <button id="print-report" class="btn btn-outline-secondary">
+              <i class="bi bi-printer me-2"></i>Печать отчета
+            </button>
+          </div>
+        </div>
+
+        <% if @patients.any? %>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>№</th>
+                  <th>ФИО пациента</th>
+                  <th>Запланированное время</th>
+                  <th>Время регистрации</th>
+                  <th>Время приема у врача</th>
+                  <th>Статус</th>
+                  <th>Примечания</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @patients.each_with_index do |patient, index| %>
+                  <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= patient.full_name %></td>
+                    <td><%= patient.appointment_time %></td>
+                    <td><%= patient.registration_time || 'Не зарегистрирован' %></td>
+                    <td><%= patient.doctor_visit_time || 'Не принят' %></td>
+                    <td>
+                      <% if patient.doctor_visited_at %>
+                        <span class="badge bg-success">Прием завершен</span>
+                      <% elsif patient.registered_at %>
+                        <span class="badge bg-warning text-dark">Ожидает врача</span>
+                      <% else %>
+                        <span class="badge bg-danger">Не зарегистрирован</span>
+                      <% end %>
+                    </td>
+                    <td><%= patient.doctor_notes %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+              <tfoot>
+                <tr class="table-light">
+                  <td colspan="7">
+                    <strong>Итого:</strong> 
+                    <%= @patients.count %> пациентов, 
+                    <%= @patients.where.not(registered_at: nil).count %> зарегистрированы,
+                    <%= @patients.where.not(doctor_visited_at: nil).count %> приняты врачом
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        <% else %>
+          <div class="alert alert-info">
+            Нет данных о пациентах на <%= @selected_date.strftime('%d.%m.%Y') %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
