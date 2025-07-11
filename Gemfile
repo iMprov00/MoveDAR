@@ -11,6 +11,7 @@ gem 'axlsx', '~> 3.0'
 gem 'roo'
 gem 'roo-xls'
 gem 'caxlsx' 
+gem 'rack-flash3'
 
 group :development do 
 	gem "tux"

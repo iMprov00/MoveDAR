@@ -1,18 +1,68 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Excel Data Extractor</title>
-  <style>
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-  </style>
-</head>
-<body>
-  <h1>Загрузите Excel файл</h1>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" accept=".xls,.xlsx">
-    <button type="submit">Загрузить</button>
-  </form>
-</body>
-</html>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <% if @error_message %>
+      <div class="alert alert-danger alert-dismissible fade show mb-3">
+        <%= @error_message %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+    
+    <% if @success_message %>
+      <div class="alert alert-success alert-dismissible fade show mb-3">
+        <%= @success_message %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Загрузка графика приема</h4>
+      </div>
+      <div class="card-body">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="date" class="form-label">Дата приема</label>
+            <input type="text" class="form-control datepicker" id="date" name="date" required>
+          </div>
+          <div class="mb-3">
+            <label for="file" class="form-label">Файл Excel</label>
+            <input class="form-control" type="file" id="file" name="file" accept=".xls,.xlsx" required>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-upload me-2"></i>Загрузить
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <% if @appointments && @appointments.any? %>
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">Загруженные записи</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>ФИО</th>
+                  <th>Время приема</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @appointments.each do |appointment| %>
+                  <tr>
+                    <td><%= appointment.appointment_date.strftime('%d.%m.%Y') %></td>
+                    <td><%= appointment.full_name %></td>
+                    <td><%= appointment.appointment_time %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -7,6 +7,9 @@ require 'date'
 # Подключение к базе данных
 set :database, {adapter: "sqlite3", database: "hospitalization.db"}
 
+# Включаем поддержку сессий
+enable :sessions
+
 # Модель
 class Appointment < ActiveRecord::Base
   validates :full_name, :appointment_time, :appointment_date, presence: true
@@ -14,6 +17,7 @@ end
 
 # Главная страница
 get '/' do
+  @appointments = Appointment.order(:appointment_date, :appointment_time)
   erb :index
 end
 
@@ -30,15 +34,16 @@ post '/upload' do
       # Сохраняем в базу данных
       save_to_database(excel_data, appointment_date)
       
-      flash[:notice] = "Данные успешно загружены!"
+      @success_message = "Данные успешно загружены!"
     rescue => e
-      flash[:alert] = "Ошибка: #{e.message}"
+      @error_message = "Ошибка: #{e.message}"
     end
   else
-    flash[:alert] = "Пожалуйста, выберите дату и файл"
+    @error_message = "Пожалуйста, выберите дату и файл"
   end
   
-  redirect back
+  @appointments = Appointment.order(:appointment_date, :appointment_time)
+  erb :index
 end
 
 private

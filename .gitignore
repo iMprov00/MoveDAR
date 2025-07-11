@@ -1,0 +1,6 @@
+
+hospitalization.db-shm
+hospitalization.db-wal
+db/schema.rb
+db/migrate/20250711064551_create_appointments.rb
+hospitalization.db
