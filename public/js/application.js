@@ -63,3 +63,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+
+
+
+// Для страницы кабинета врача
+document.addEventListener('DOMContentLoaded', function() {
+  // Управление временем (аналогично регистратуре)
+  const timeCheckbox = document.getElementById('current-time-checkbox');
+  const timeInput = document.getElementById('time-input');
+  
+  if (timeCheckbox && timeInput) {
+    timeCheckbox.addEventListener('change', function() {
+      timeInput.disabled = this.checked;
+      if (this.checked) {
+        timeInput.value = new Date().toTimeString().substring(0, 5);
+      }
+    });
+  }
+  
+  // Инициализация datepicker для страницы кабинета
+  const doctorDateFilter = document.getElementById('date-filter');
+  if (doctorDateFilter) {
+    flatpickr(doctorDateFilter, {
+      dateFormat: 'd.m.Y',
+      locale: 'ru',
+      allowInput: true,
+      defaultDate: doctorDateFilter.value,
+      onChange: function(selectedDates, dateStr) {
+        const url = this.element.dataset.url;
+        const selectedDate = dateStr.split('.').reverse().join('-');
+        window.location.href = `${url}?selected_date=${selectedDate}`;
+      }
+    });
+  }
+});

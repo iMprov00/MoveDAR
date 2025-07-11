@@ -1,0 +1,99 @@
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <% if session[:error_message] %>
+      <div class="alert alert-danger alert-dismissible fade show mb-3">
+        <%= session.delete(:error_message) %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+    
+    <% if session[:success_message] %>
+      <div class="alert alert-success alert-dismissible fade show mb-3">
+        <%= session.delete(:success_message) %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+
+    <div class="card shadow-sm mb-4 border-info">
+      <div class="card-header bg-info text-white">
+        <h4 class="mb-0">Кабинет врача</h4>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="date-filter" class="form-label">Дата приема</label>
+            <input type="text" 
+                   class="form-control datepicker" 
+                   id="date-filter" 
+                   value="<%= @selected_date.strftime('%d.%m.%Y') %>"
+                   data-url="/doctor">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if @patients.any? %>
+      <div class="card shadow-sm border-info">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">Пациенты на <%= @selected_date.strftime('%d.%m.%Y') %></h4>
+        </div>
+        <div class="card-body">
+          <form action="/mark_doctor_visit" method="post">
+            <input type="hidden" name="selected_date" value="<%= @selected_date.strftime('%Y-%m-%d') %>">
+            
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label for="patient-select" class="form-label">Пациент</label>
+                <select class="form-select" id="patient-select" name="patient_id" required>
+                  <option value="">Выберите пациента</option>
+                  <% @patients.each do |patient| %>
+                    <option value="<%= patient.id %>">
+                      <%= patient.full_name %> (зарегистрирован в <%= patient.registration_time %>)
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Время приема у врача</label>
+                <div class="input-group">
+                  <input type="time" 
+                         class="form-control" 
+                         id="time-input" 
+                         name="custom_time" 
+                         value="<%= Time.now.strftime('%H:%M') %>"
+                         step="60"
+                         disabled>
+                  <div class="input-group-text">
+                    <input class="form-check-input mt-0" 
+                           type="checkbox" 
+                           id="current-time-checkbox" 
+                           name="current_time" 
+                           value="1" 
+                           checked>
+                    <label class="form-check-label ms-2" for="current-time-checkbox">Текущее</label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-12">
+                <label for="notes" class="form-label">Примечания</label>
+                <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+              </div>
+              
+              <div class="col-12">
+                <button type="submit" class="btn btn-info text-white">
+                  <i class="bi bi-check-circle me-2"></i>Отметить у врача
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    <% else %>
+      <div class="alert alert-info">
+        Нет пациентов для приема у врача на <%= @selected_date.strftime('%d.%m.%Y') %>
+      </div>
+    <% end %>
+  </div>
+</div>

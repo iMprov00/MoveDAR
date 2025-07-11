@@ -196,3 +196,35 @@ post '/register_patient' do
   
   redirect "/registration?selected_date=#{params[:selected_date]}"
 end
+
+
+
+
+
+
+# Страница кабинета врача
+get '/doctor' do
+  @selected_date = params[:selected_date] ? Date.parse(params[:selected_date]) : Date.today
+  @patients = Appointment.where(appointment_date: @selected_date)
+                         .where.not(registered_at: nil)
+                         .where(doctor_visited_at: nil)
+                         .order(:registration_time)
+  erb :doctor
+end
+
+# Обработка отметки посещения врача
+post '/mark_doctor_visit' do
+  appointment = Appointment.find(params[:patient_id])
+  
+  if appointment.update(
+    doctor_visited_at: Time.now,
+    doctor_visit_time: params[:current_time] == '1' ? Time.now.strftime('%H:%M') : params[:custom_time],
+    doctor_notes: params[:notes]
+  )
+    session[:success_message] = "#{appointment.full_name} успешно отмечен(а) у врача"
+  else
+    session[:error_message] = "Ошибка при отметке посещения врача"
+  end
+  
+  redirect "/doctor?selected_date=#{params[:selected_date]}"
+end
