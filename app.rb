@@ -22,28 +22,30 @@ get '/' do
   erb :index
 end
 
-# Обработка загрузки файла
 post '/upload' do
   @error_message = nil
   @success_message = nil
 
-  if params[:file] && params[:file][:tempfile] && params[:date]
+  if params[:file] && params[:file][:tempfile]
     begin
       file_path = params[:file][:tempfile].path
-      @selected_date = Date.parse(params[:date])
       
       # Извлекаем данные из Excel
-      excel_data = extract_data_from_excel(file_path)
+      excel_data, extracted_dates = extract_data_from_excel(file_path)
+      
+      @selected_date = extracted_dates.first
       
       # Сохраняем в базу данных
       save_to_database(excel_data, @selected_date)
       
       @success_message = "Данные успешно загружены на #{@selected_date.strftime('%d.%m.%Y')}!"
     rescue => e
-      @error_message = "Ошибка: #{e.message}"
+      @error_message = "Ошибка обработки файла: #{e.message}"
+      @selected_date ||= Date.today
     end
   else
-    @error_message = "Пожалуйста, выберите дату и файл"
+    @error_message = "Пожалуйста, выберите файл"
+    @selected_date = Date.today
   end
   
   @appointments = Appointment.where(appointment_date: @selected_date).order(:appointment_time)
@@ -54,16 +56,60 @@ private
 
 def extract_data_from_excel(file_path)
   data = []
+  dates = []
   xls = Roo::Spreadsheet.open(file_path)
   
-  (8..xls.last_row).each do |row|
-    full_name = xls.cell(row, 4)  # Столбец D
-    time = xls.cell(row, 3)       # Столбец C
-    
-    data << { full_name: full_name, time: time } if full_name && time
+  # Ищем строку с заголовками (где в C7 "Время" и D7 "Ф.И.О.")
+  header_row = 7 # Фиксированная строка с заголовками
+  
+  # Проверяем, что это действительно заголовки
+  unless xls.cell(header_row, 3).to_s.include?("Время") && xls.cell(header_row, 4).to_s.include?("Ф.И.О.")
+    raise "Не удалось найти заголовки таблицы в строке #{header_row}"
   end
   
-  data
+  # Обрабатываем строки с данными (начиная со следующей после заголовков)
+  ((header_row + 1)..xls.last_row).each do |row|
+    # Получаем значения ячеек
+    datetime_str = xls.cell(row, 3).to_s.strip
+    full_name = xls.cell(row, 4).to_s.strip
+    
+    # Пропускаем пустые строки
+    next if full_name.empty? && datetime_str.empty?
+    
+    # Парсим дату и время (формат "dd.mm.YYYY HH:MM")
+    if datetime_str.match(/(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})/)
+      date_part = $1
+      time_part = $2
+      
+      begin
+        date = Date.strptime(date_part, '%d.%m.%Y')
+        dates << date
+        
+        data << {
+          full_name: full_name,
+          time: time_part,
+          date: date
+        }
+      rescue ArgumentError => e
+        puts "Ошибка парсинга даты: #{e.message}"
+        next
+      end
+    elsif !datetime_str.empty?
+      puts "Неверный формат даты/времени в строке #{row}: #{datetime_str}"
+    end
+  end
+  
+  if dates.empty?
+    raise "В файле не найдено ни одной корректной записи с датой и временем"
+  end
+  
+  # Проверяем, что все даты одинаковые
+  unique_dates = dates.uniq
+  if unique_dates.size > 1
+    raise "В файле обнаружены записи с разными датами: #{unique_dates.map { |d| d.strftime('%d.%m.%Y') }.join(', ')}"
+  end
+  
+  [data, unique_dates]
 end
 
 def save_to_database(data, appointment_date)
