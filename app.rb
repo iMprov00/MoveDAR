@@ -17,24 +17,28 @@ end
 
 # Главная страница
 get '/' do
-  @appointments = Appointment.order(:appointment_date, :appointment_time)
+  @selected_date = params[:selected_date] ? Date.parse(params[:selected_date]) : Date.today
+  @appointments = Appointment.where(appointment_date: @selected_date).order(:appointment_time)
   erb :index
 end
 
 # Обработка загрузки файла
 post '/upload' do
+  @error_message = nil
+  @success_message = nil
+
   if params[:file] && params[:file][:tempfile] && params[:date]
     begin
       file_path = params[:file][:tempfile].path
-      appointment_date = Date.parse(params[:date])
+      @selected_date = Date.parse(params[:date])
       
       # Извлекаем данные из Excel
       excel_data = extract_data_from_excel(file_path)
       
       # Сохраняем в базу данных
-      save_to_database(excel_data, appointment_date)
+      save_to_database(excel_data, @selected_date)
       
-      @success_message = "Данные успешно загружены!"
+      @success_message = "Данные успешно загружены на #{@selected_date.strftime('%d.%m.%Y')}!"
     rescue => e
       @error_message = "Ошибка: #{e.message}"
     end
@@ -42,7 +46,7 @@ post '/upload' do
     @error_message = "Пожалуйста, выберите дату и файл"
   end
   
-  @appointments = Appointment.order(:appointment_date, :appointment_time)
+  @appointments = Appointment.where(appointment_date: @selected_date).order(:appointment_time)
   erb :index
 end
 

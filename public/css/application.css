@@ -1,5 +1,14 @@
+/* Основные цвета */
+:root {
+  --main-color: #28a745;
+  --main-color-dark: #218838;
+  --secondary-color: #6c757d;
+}
+
+/* Навбар */
 .navbar-custom {
-  background-color: #2c3e50;
+  background-color: var(--main-color) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .logo-img {
@@ -7,15 +16,39 @@
   margin-right: 10px;
 }
 
-.card {
-  border: none;
-  border-radius: 10px;
-}
-
+/* Карточки */
 .card-header {
-  border-radius: 10px 10px 0 0 !important;
+  background-color: var(--main-color);
+  border-color: var(--main-color);
 }
 
-.table th {
-  background-color: #f8f9fa;
+.btn-success {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+
+.btn-success:hover {
+  background-color: var(--main-color-dark);
+  border-color: var(--main-color-dark);
+}
+
+/* Таблица */
+.table-success {
+  background-color: #d4edda;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+/* Стили для фильтра даты */
+.date-filter {
+  max-width: 150px;
+}
+
+.card-header .date-filter .form-control {
+  background-color: white;
+  border: none;
+  color: #495057;
+  padding: 0.375rem 0.75rem;
 }
