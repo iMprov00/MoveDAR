@@ -1,0 +1,87 @@
+<div class="card mb-4">
+  <div class="card-body">
+    <h1 class="card-title">Движение пациентов</h1>
+    
+    <form id="date-form" class="row justify-content-center mb-4">
+      <div class="col-md-6 text-center">
+        <label for="date-picker" class="form-label mb-2">
+          <h3>Дата учета движения</h3>
+        </label>
+        <div class="date-picker-container position-relative d-inline-block">
+          <input type="text" 
+                 class="form-control fw-bold fs-5 py-2 date-picker-input ps-5" 
+                 name="date" 
+                 value="<%= @target_date.strftime('%d.%m.%Y') %>"
+                 id="date-picker"
+                 placeholder="дд.мм.гггг"
+                 data-input>
+          <i class="bi bi-calendar3 date-picker-icon"></i>
+        </div>
+      </div>
+    </form>
+    
+    <form class="row g-3" method="post" action="/upload" enctype="multipart/form-data">
+      <input type="hidden" name="date" value="<%= @target_date.strftime('%Y-%m-%d') %>">
+      
+      <div class="col-md-6">
+        <label for="file" class="form-label">Загрузить пациентов из Excel:</label>
+        <input class="form-control" type="file" name="file" id="file" accept=".xlsx,.xls">
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success">Загрузить</button>
+      </div>
+      <div class="col-md-3">
+        <a href="/download_template" class="btn btn-outline-secondary">Скачать шаблон</a>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="date-picker-container position-relative d-inline-block">
+  <input type="text" 
+         class="form-control fw-bold fs-5 py-2 date-picker-input ps-5" 
+         name="date" 
+         value="<%= @target_date.strftime('%d.%m.%Y') %>"
+         id="date-picker"
+         placeholder="дд.мм.гггг"
+         data-input>
+  <i class="bi bi-calendar3 date-picker-icon"></i>
+  
+  <div class="btn-group ms-3" role="group">
+    <button type="button" class="btn btn-outline-secondary day-nav" id="prev-day">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button type="button" class="btn btn-outline-secondary day-nav" id="today">
+      Сегодня
+    </button>
+    <button type="button" class="btn btn-outline-secondary day-nav" id="next-day">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Список пациентов на <%= @target_date.strftime('%d.%m.%Y') %></h2>
+    
+    <% if @patients.empty? %>
+      <div class="alert alert-info">Нет данных о пациентах на выбранную дату</div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ФИО</th>
+              <th>Регистратура</th>
+              <th>Кабинет</th>
+              <th>КПП</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @patients.each do |patient| %>
+              <%= erb :_patient_row, locals: { patient: patient, date: @target_date } %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</div>

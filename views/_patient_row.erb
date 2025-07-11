@@ -1,0 +1,16 @@
+<tr>
+  <td><%= h patient.full_name %></td>
+  <% ['Регистратура', 'Кабинет врача', 'КПП'].each do |checkpoint| %>
+    <td>
+      <% movement = patient.movements.find { |m| m.checkpoint.name == checkpoint } %>
+      <% if movement %>
+        <%= movement.recorded_at.strftime('%H:%M') %>
+        <% if movement.current_time %>
+          <span class="badge bg-success">авто</span>
+        <% end %>
+      <% else %>
+        <span class="text-muted">-</span>
+      <% end %>
+    </td>
+  <% end %>
+</tr>
