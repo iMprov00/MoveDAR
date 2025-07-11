@@ -1,83 +1,74 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require 'roo'
+require 'roo-xls'
+require 'date'
 
-# Модели
-require_relative 'models/patient'
-require_relative 'models/checkpoint'
-require_relative 'models/movement'
+# Подключение к базе данных
+set :database, {adapter: "sqlite3", database: "hospitalization.db"}
 
-set :database, { adapter: "sqlite3", database: "db/hospital_movement.db" }
+# Модель
+class Appointment < ActiveRecord::Base
+  validates :full_name, :appointment_time, :appointment_date, presence: true
+end
 
 # Главная страница
 get '/' do
-  @target_date = params[:date] ? Date.parse(params[:date]) : Date.today
-  @patients = Patient.joins(:movements)
-                    .where(movements: { movement_date: @target_date })
-                    .distinct
-                    .order(:full_name)
   erb :index
 end
 
-# Загрузка файла
+# Обработка загрузки файла
 post '/upload' do
-  date = Date.parse(params[:date])
-  registration = Checkpoint.find_by(name: 'Регистратура')
-
-  if params[:file] && params[:file][:tempfile]
-    tempfile = params[:file][:tempfile]
-    file_path = tempfile.path
-    
+  if params[:file] && params[:file][:tempfile] && params[:date]
     begin
-      # Используем Roo::Excelx с явным указанием файла
-      excel = Roo::Spreadsheet.open(file_path, extension: :xlsx)
+      file_path = params[:file][:tempfile].path
+      appointment_date = Date.parse(params[:date])
       
-      # Определяем последнюю строку
-      last_row = excel.last_row
+      # Извлекаем данные из Excel
+      excel_data = extract_data_from_excel(file_path)
       
-      (2..last_row).each do |row|
-        # Получаем значения ячеек
-        full_name = excel.cell(row, 1).to_s.strip
-        time_value = excel.cell(row, 2)
-        
-        next if full_name.empty?
-
-        # Обработка времени
-        time_str = case time_value
-                  when Numeric # Excel time format (0.375 = 09:00)
-                    seconds = (time_value * 24 * 60 * 60).to_i
-                    Time.at(seconds).utc.strftime('%H:%M')
-                  when Time, DateTime
-                    time_value.strftime('%H:%M')
-                  when String
-                    # Нормализация строкового времени (9:00 -> 09:00)
-                    time_value.gsub(/[^\d]/, '').rjust(4, '0').insert(2, ':')
-                  else
-                    '00:00' # fallback
-                  end
-
-        # Создание или обновление записи
-        patient = Patient.find_or_create_by(full_name: full_name)
-        
-        Movement.create(
-          patient: patient,
-          checkpoint: registration,
-          movement_date: date,
-          recorded_at: Time.parse("#{date} #{time_str}"),
-          current_time: false
-        )
-      end
+      # Сохраняем в базу данных
+      save_to_database(excel_data, appointment_date)
       
-      flash[:success] = "Файл успешно загружен"
-    rescue StandardError => e
-      puts "Ошибка загрузки: #{e.message}"
-      puts e.backtrace.first(5).join("\n")
-      flash[:error] = "Ошибка загрузки: #{e.message}"
-    ensure
-      tempfile.close
-      tempfile.unlink if tempfile.respond_to?(:unlink)
+      flash[:notice] = "Данные успешно загружены!"
+    rescue => e
+      flash[:alert] = "Ошибка: #{e.message}"
     end
+  else
+    flash[:alert] = "Пожалуйста, выберите дату и файл"
   end
+  
+  redirect back
+end
 
-  redirect "/?date=#{date}"
+private
+
+def extract_data_from_excel(file_path)
+  data = []
+  xls = Roo::Spreadsheet.open(file_path)
+  
+  (8..xls.last_row).each do |row|
+    full_name = xls.cell(row, 4)  # Столбец D
+    time = xls.cell(row, 3)       # Столбец C
+    
+    data << { full_name: full_name, time: time } if full_name && time
+  end
+  
+  data
+end
+
+def save_to_database(data, appointment_date)
+  data.each do |item|
+    next if Appointment.exists?(
+      full_name: item[:full_name],
+      appointment_time: item[:time],
+      appointment_date: appointment_date
+    )
+    
+    Appointment.create(
+      full_name: item[:full_name],
+      appointment_time: item[:time],
+      appointment_date: appointment_date
+    )
+  end
 end

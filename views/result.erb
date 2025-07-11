@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Результаты из Excel</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>Данные из Excel</h1>
+  <a href="/">Назад</a>
+  <table>
+    <thead>
+      <tr>
+        <th>ФИО</th>
+        <th>Время приема</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @data.each do |row| %>
+        <tr>
+          <td><%= row[:full_name] %></td>
+          <td><%= row[:time] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</body>
+</html>
