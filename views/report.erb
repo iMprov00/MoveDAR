@@ -41,8 +41,8 @@
                     <td><%= index + 1 %></td>
                     <td><%= patient.full_name %></td>
                     <td><%= patient.appointment_time %></td>
-                    <td><%= patient.registration_time || 'Не зарегистрирован' %></td>
-                    <td><%= patient.doctor_visit_time || 'Не принят' %></td>
+                    <td><%= patient.registration_time&.strftime('%H:%M:%S') || 'Не зарегистрирован' %></td>
+                    <td><%= patient.doctor_visit_time&.strftime('%H:%M:%S') || 'Не принят' %></td>
                     <td>
                       <% if patient.doctor_visited_at %>
                         <span class="badge bg-success">Прием завершен</span>

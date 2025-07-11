@@ -175,19 +175,18 @@ get '/registration' do
   erb :registration
 end
 
-# Обработка отметки пациента
 post '/register_patient' do
   appointment = Appointment.find(params[:patient_id])
   
   if params[:current_time] == '1'
-    registration_time = Time.now.strftime('%H:%M')
+    registration_time = Time.now.strftime('%H:%M:%S') # Только время
   else
-    registration_time = params[:custom_time]
+    registration_time = params[:custom_time] + ':00' # Добавляем секунды
   end
 
   if appointment.update(
-    registered_at: Time.now,
-    registration_time: registration_time
+    registered_at: Time.now, # Это поле остаётся datetime для истории
+    registration_time: registration_time # А это только время
   )
     session[:success_message] = "#{appointment.full_name} успешно отмечен(а) в регистратуре в #{registration_time}"
   else
@@ -196,7 +195,6 @@ post '/register_patient' do
   
   redirect "/registration?selected_date=#{params[:selected_date]}"
 end
-
 
 
 
@@ -212,13 +210,19 @@ get '/doctor' do
   erb :doctor
 end
 
-# Обработка отметки посещения врача
+# В методе обработки посещения врача (/mark_doctor_visit)
 post '/mark_doctor_visit' do
   appointment = Appointment.find(params[:patient_id])
   
+  if params[:current_time] == '1'
+    visit_time = Time.now.strftime('%H:%M:%S')
+  else
+    visit_time = params[:custom_time] + ':00'
+  end
+
   if appointment.update(
-    doctor_visited_at: Time.now,
-    doctor_visit_time: params[:current_time] == '1' ? Time.now.strftime('%H:%M') : params[:custom_time],
+    doctor_visited_at: Time.now, # Полная дата-время для истории
+    doctor_visit_time: visit_time, # Только время
     doctor_notes: params[:notes]
   )
     session[:success_message] = "#{appointment.full_name} успешно отмечен(а) у врача"
@@ -228,6 +232,11 @@ post '/mark_doctor_visit' do
   
   redirect "/doctor?selected_date=#{params[:selected_date]}"
 end
+
+
+
+
+
 
 
 # Страница отчета

@@ -6,3 +6,4 @@ db/migrate/20250711064551_create_appointments.rb
 hospitalization.db
 db/migrate/20250711075830_add_registered_to_appointments.rb
 db/migrate/20250711080309_add_doctor_columns_to_appointments.rb
+db/migrate/20250711090428_change_time_columns_to_time_only.rb

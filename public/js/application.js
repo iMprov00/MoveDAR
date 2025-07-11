@@ -74,12 +74,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const timeInput = document.getElementById('time-input');
   
   if (timeCheckbox && timeInput) {
-    timeCheckbox.addEventListener('change', function() {
-      timeInput.disabled = this.checked;
-      if (this.checked) {
-        timeInput.value = new Date().toTimeString().substring(0, 5);
-      }
-    });
+      timeCheckbox.addEventListener('change', function() {
+        timeInput.disabled = this.checked;
+        if (this.checked) {
+          const now = new Date();
+          timeInput.value = now.getHours().toString().padStart(2, '0') + ':' + 
+                            now.getMinutes().toString().padStart(2, '0');
+        }
+      });
   }
   
   // Инициализация datepicker для страницы кабинета
