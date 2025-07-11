@@ -112,6 +112,44 @@ def extract_data_from_excel(file_path)
   [data, unique_dates]
 end
 
+# Удаление одной записи
+post '/appointments/:id/delete' do
+  # Находим запись по ID
+  appointment = Appointment.find_by(id: params[:id])
+  
+  if appointment
+    # Удаляем запись
+    appointment.destroy
+    @success_message = "Запись успешно удалена"
+  else
+    @error_message = "Не удалось найти запись для удаления"
+  end
+  
+  # Перенаправляем обратно на ту же страницу
+  redirect back
+end
+
+# Удаление всех записей на выбранную дату
+post '/appointments/delete_all' do
+  if params[:date]
+    # Преобразуем строку даты в объект Date
+    date = Date.parse(params[:date]) rescue nil
+    
+    if date
+      # Удаляем все записи на указанную дату
+      count = Appointment.where(appointment_date: date).delete_all
+      @success_message = "Удалено #{count} записей"
+    else
+      @error_message = "Неверный формат даты"
+    end
+  else
+    @error_message = "Дата не указана"
+  end
+  
+  # Перенаправляем обратно на ту же страницу
+  redirect back
+end
+
 def save_to_database(data, appointment_date)
   data.each do |item|
     next if Appointment.exists?(
