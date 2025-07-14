@@ -1,94 +1,96 @@
-<div class="row justify-content-center">
-  <div class="col-md-10">
-    <% if session[:error_message] %>
-      <div class="alert alert-danger alert-dismissible fade show mb-3">
-        <%= session.delete(:error_message) %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% end %>
-    
-    <% if session[:success_message] %>
-      <div class="alert alert-success alert-dismissible fade show mb-3">
-        <%= session.delete(:success_message) %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% end %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <% if session[:error_message] %>
+        <div class="alert alert-danger alert-dismissible fade show mb-4 rounded">
+          <%= session.delete(:error_message) %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+      
+      <% if session[:success_message] %>
+        <div class="alert alert-success alert-dismissible fade show mb-4 rounded">
+          <%= session.delete(:success_message) %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
 
-    <div class="card shadow-sm mb-4 border-primary">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Регистратура</h4>
-      </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="date-filter" class="form-label">Дата приема</label>
-            <input type="text" 
-                   class="form-control datepicker" 
-                   id="date-filter" 
-                   value="<%= @selected_date.strftime('%d.%m.%Y') %>"
-                   data-url="/registration">
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-main text-white rounded-top">
+          <h4 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Регистратура</h4>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="date-filter" class="form-label">Дата приема</label>
+              <input type="text" 
+                     class="form-control datepicker" 
+                     id="date-filter" 
+                     value="<%= @selected_date.strftime('%d.%m.%Y') %>"
+                     data-url="/registration">
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <% if @patients.any? %>
-      <div class="card shadow-sm border-primary">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">Отметка пациентов на <%= @selected_date.strftime('%d.%m.%Y') %></h4>
-        </div>
-        <div class="card-body">
-          <form action="/register_patient" method="post">
-            <input type="hidden" name="selected_date" value="<%= @selected_date.strftime('%Y-%m-%d') %>">
-            
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <label for="patient-select" class="form-label">Пациент</label>
-                <select class="form-select" id="patient-select" name="patient_id" required>
-                  <option value="">Выберите пациента</option>
-                  <% @patients.each do |patient| %>
-                    <option value="<%= patient.id %>">
-                      <%= patient.full_name %> (<%= patient.appointment_time %>)
-                    </option>
-                  <% end %>
-                </select>
-              </div>
+      <% if @patients.any? %>
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-main text-white rounded-top">
+            <h4 class="mb-0"><i class="bi bi-person-check me-2"></i>Отметка пациентов на <%= @selected_date.strftime('%d.%m.%Y') %></h4>
+          </div>
+          <div class="card-body">
+            <form action="/register_patient" method="post">
+              <input type="hidden" name="selected_date" value="<%= @selected_date.strftime('%Y-%m-%d') %>">
               
-              <div class="col-md-6">
-                <label class="form-label">Время отметки</label>
-                <div class="input-group">
-                  <input type="time" 
-                         class="form-control" 
-                         id="time-input" 
-                         name="custom_time" 
-                         value="<%= Time.now.strftime('%H:%M') %>"
-                         step="60"
-                         disabled>
-                  <div class="input-group-text">
-                    <input class="form-check-input mt-0" 
-                           type="checkbox" 
-                           id="current-time-checkbox" 
-                           name="current_time" 
-                           value="1" 
-                           checked>
-                    <label class="form-check-label ms-2" for="current-time-checkbox">Текущее</label>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label for="patient-select" class="form-label">Пациент</label>
+                  <select class="form-select" id="patient-select" name="patient_id" required>
+                    <option value="">Выберите пациента</option>
+                    <% @patients.each do |patient| %>
+                      <option value="<%= patient.id %>">
+                        <%= patient.full_name %> (<%= patient.appointment_time %>)
+                      </option>
+                    <% end %>
+                  </select>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label">Время отметки</label>
+                  <div class="input-group">
+                    <input type="time" 
+                           class="form-control" 
+                           id="time-input" 
+                           name="custom_time" 
+                           value="<%= Time.now.strftime('%H:%M') %>"
+                           step="60"
+                           disabled>
+                    <div class="input-group-text">
+                      <input class="form-check-input mt-0" 
+                             type="checkbox" 
+                             id="current-time-checkbox" 
+                             name="current_time" 
+                             value="1" 
+                             checked>
+                      <label class="form-check-label ms-2" for="current-time-checkbox">Текущее</label>
+                    </div>
                   </div>
                 </div>
+                
+                <div class="col-12 mt-3">
+                  <button type="submit" class="btn btn-primary ">
+                    <i class="bi bi-check-circle me-2 "></i>Отметить
+                  </button>
+                </div>
               </div>
-              
-              <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                  <i class="bi bi-check-circle me-2"></i>Отметить
-                </button>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
-    <% else %>
-      <div class="alert alert-info">
-        Нет пациентов для отметки на <%= @selected_date.strftime('%d.%m.%Y') %>
-      </div>
-    <% end %>
+      <% else %>
+        <div class="alert alert-info rounded">
+          <i class="bi bi-info-circle me-2"></i>Нет пациентов для отметки на <%= @selected_date.strftime('%d.%m.%Y') %>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

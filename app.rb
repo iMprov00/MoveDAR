@@ -35,10 +35,12 @@ post '/upload' do
       
       @selected_date = extracted_dates.first
       
-      # Сохраняем в базу данных
+      # Сохраняем в базу данных (теперь данные будут добавляться, а не заменяться)
       save_to_database(excel_data, @selected_date)
       
-      @success_message = "Данные успешно загружены на #{@selected_date.strftime('%d.%m.%Y')}!"
+      # Подсчитываем количество добавленных записей
+      added_count = excel_data.count
+      @success_message = "Добавлено #{added_count} новых записей на #{@selected_date.strftime('%d.%m.%Y')}!"
     rescue => e
       @error_message = "Ошибка обработки файла: #{e.message}"
       @selected_date ||= Date.today
@@ -59,24 +61,18 @@ def extract_data_from_excel(file_path)
   dates = []
   xls = Roo::Spreadsheet.open(file_path)
   
-  # Ищем строку с заголовками (где в C7 "Время" и D7 "Ф.И.О.")
   header_row = 7 # Фиксированная строка с заголовками
   
-  # Проверяем, что это действительно заголовки
   unless xls.cell(header_row, 3).to_s.include?("Время") && xls.cell(header_row, 4).to_s.include?("Ф.И.О.")
     raise "Не удалось найти заголовки таблицы в строке #{header_row}"
   end
   
-  # Обрабатываем строки с данными (начиная со следующей после заголовков)
   ((header_row + 1)..xls.last_row).each do |row|
-    # Получаем значения ячеек
     datetime_str = xls.cell(row, 3).to_s.strip
     full_name = xls.cell(row, 4).to_s.strip
     
-    # Пропускаем пустые строки
     next if full_name.empty? && datetime_str.empty?
     
-    # Парсим дату и время (формат "dd.mm.YYYY HH:MM")
     if datetime_str.match(/(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})/)
       date_part = $1
       time_part = $2
@@ -103,13 +99,7 @@ def extract_data_from_excel(file_path)
     raise "В файле не найдено ни одной корректной записи с датой и временем"
   end
   
-  # Проверяем, что все даты одинаковые
-  unique_dates = dates.uniq
-  if unique_dates.size > 1
-    raise "В файле обнаружены записи с разными датами: #{unique_dates.map { |d| d.strftime('%d.%m.%Y') }.join(', ')}"
-  end
-  
-  [data, unique_dates]
+  [data, dates.uniq]
 end
 
 # Удаление одной записи
@@ -152,17 +142,19 @@ end
 
 def save_to_database(data, appointment_date)
   data.each do |item|
-    next if Appointment.exists?(
+    # Проверяем, существует ли уже такая запись (по всем параметрам)
+    unless Appointment.exists?(
       full_name: item[:full_name],
       appointment_time: item[:time],
       appointment_date: appointment_date
     )
-    
-    Appointment.create(
-      full_name: item[:full_name],
-      appointment_time: item[:time],
-      appointment_date: appointment_date
-    )
+      # Если не существует - создаем новую запись
+      Appointment.create(
+        full_name: item[:full_name],
+        appointment_time: item[:time],
+        appointment_date: appointment_date
+      )
+    end
   end
 end
 

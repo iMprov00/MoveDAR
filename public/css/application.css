@@ -1,86 +1,394 @@
-/* Основные цвета */
+/* ====================== */
+/* Глобальные переменные цветов */
+/* Используются во всем приложении для единообразия */
+/* ====================== */
+/* Глобальные переменные */
+/* ====================== */
 :root {
-  --main-color: #28a745;
-  --main-color-dark: #218838;
+  --main-color: #54c654;
+  --main-color-dark: #3a8a3a;
   --secondary-color: #6c757d;
+  --info-color: #17a2b8;
+  --primary-color: #007bff;
+  --danger-color: #dc3545;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+  --text-color: #333;
+  --text-light: #fff;
+  --bg-light: #f8f9fa;
 }
 
-/* Навбар */
-.navbar-custom {
-  background-color: var(--main-color) !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+/* ====================== */
+/* Основные стили страницы */
+/* Задают общий вид всему приложению */
+/* ====================== */
+body {
+  font-family: 'Jost', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-color);
+  padding-top: 20px;
+}
+/* ====================== */
+/* Навигационная панель */
+/* ====================== */
+.navbar-main {
+  background-color: var(--main-color);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem;
 }
 
-.logo-img {
-  height: 30px;
-  margin-right: 10px;
+.navbar-logo {
+  height: 40px;
+  transition: transform 0.3s ease;
 }
 
-/* Карточки */
+.navbar-brand:hover .navbar-logo {
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.navbar-brand-text {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.navbar-links .nav-link {
+  color: var(--text-light);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.navbar-links .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.navbar-links .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+}
+
+/* ====================== */
+/* Подвал */
+/* ====================== */
+.footer {
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: #6c757d;
+}
+/* Адаптивность */
+/* ====================== */
+@media (max-width: 992px) {
+  .navbar-links {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .navbar-links .nav-link {
+    margin: 0.25rem 0;
+    width: 100%;
+    text-align: center;
+  }
+}
+/* ====================== */
+/* Карточки (основные блоки контента) */
+/* Используются на всех страницах для группировки информации */
+/* ====================== */
+.card {
+  border: none;                   /* Убираем стандартную рамку */
+  border-radius: 10px;            /* Закругленные углы */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Тень */
+  transition: all 0.3s ease;      /* Анимация */
+  margin-bottom: 25px;            /* Отступ снизу */
+}
+.card:hover {
+  transform: translateY(-5px);    /* Эффект поднятия */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12); /* Усиленная тень */
+}
+
+/* Заголовок карточки */
 .card-header {
+  border-bottom: none;            /* Убираем разделитель */
+  padding: 1.25rem 1.5rem;       /* Внутренние отступы */
+  color: white;                   /* Белый текст */
+}
+
+/* Цвета заголовков для разных разделов */
+.bg-info { /* Для кабинета врача */
+  background-color: var(--info-color) !important; 
+}
+.bg-primary { /* Для регистратуры */
+  background-color: var(--primary-color) !important;
+}
+.bg-success { /* Для загрузки графика */
+  background-color: var(--success-color) !important;
+}
+.bg-secondary { /* Для отчетов */
+  background-color: var(--secondary-color) !important;
+}
+
+/* ====================== */
+/* Дополненные стили кнопок */
+/* ====================== */
+.btn {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.3s ease;
+  border: none;
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white;
+  opacity: 0.9;
+}
+
+.btn:active, .btn:focus {
+  box-shadow: none !important;
+}
+
+/* Стили для кнопок, соответствующих цвету навбара */
+.btn-main {
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+}
+
+.btn-main:hover {
+  background-color: var(--main-color-dark);
+  color: white;
+}
+
+/* Если нужно переопределить стандартные bootstrap кнопки */
+.btn-primary {
   background-color: var(--main-color);
   border-color: var(--main-color);
 }
 
-.btn-success {
-  background-color: var(--main-color);
-  border-color: var(--main-color);
-}
-
-.btn-success:hover {
+.btn-primary:hover {
   background-color: var(--main-color-dark);
   border-color: var(--main-color-dark);
 }
 
-/* Таблица */
-.table-success {
-  background-color: #d4edda;
+.btn-info {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
 }
 
+.btn-info:hover {
+  background-color: var(--main-color-dark);
+  border-color: var(--main-color-dark);
+}
+
+/* Outline кнопки */
+.btn-outline-primary {
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-outline-secondary {
+  color: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+  background-color: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+/* Кнопки разных размеров */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 0.5rem 1.5rem;
+  font-size: 1.25rem;
+}
+/* ====================== */
+/* Таблицы (используются в отчетах и списках) */
+/* ====================== */
+.table {
+  border-radius: 8px;             /* Закругленные углы */
+  overflow: hidden;               /* Обрезаем выходящее за границы */
+}
+.table thead th {
+  background-color: #f8f9fa;      /* Светлый фон заголовков */
+  font-weight: 600;               /* Жирный текст */
+}
 .table-hover tbody tr:hover {
-  background-color: rgba(40, 167, 69, 0.1);
+  background-color: rgba(0, 123, 255, 0.05); /* Легкое выделение */
 }
 
-/* Стили для фильтра даты */
-.date-filter {
-  max-width: 150px;
+/* ====================== */
+/* Формы и элементы ввода */
+/* Стили для полей ввода, селектов и т.д. */
+/* ====================== */
+.form-control, .form-select {
+  border-radius: 8px;             /* Закругленные углы */
+  padding: 0.5rem 1rem;          /* Отступы */
+  border: 1px solid #ced4da;     /* Серая рамка */
+  transition: all 0.3s ease;     /* Плавные изменения */
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--main-color); /* Зеленая рамка при фокусе */
+  box-shadow: 0 0 0 0.2rem rgba(84, 198, 84, 0.25); /* Свечение */
 }
 
-.card-header .date-filter .form-control {
-  background-color: white;
-  border: none;
-  color: #495057;
-  padding: 0.375rem 0.75rem;
+/* Календарь (используется для выбора даты) */
+.datepicker {
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ====================== */
+/* Уведомления (алерты) */
+/* Всплывающие сообщения об ошибках и успехах */
+/* ====================== */
+.alert {
+  border-radius: 8px;             /* Закругленные углы */
+  border: none;                   /* Убираем рамку */
+}
+.alert-danger { /* Ошибки */
+  background-color: #f8d7da;      /* Светло-красный */
+  color: #721c24;                 /* Темно-красный текст */
+}
+.alert-success { /* Успешные операции */
+  background-color: #d4edda;      /* Светло-зеленый */
+  color: #155724;                 /* Темно-зеленый текст */
+}
+.alert-info { /* Информационные */
+  background-color: #d1ecf1;      /* Светло-голубой */
+  color: #0c5460;                 /* Темно-голубой текст */
+}
+/* ====================== */
+/* Основной контейнер контента */
+/* ====================== */
+.main-content-container {
+  background-color: var(--main-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: white; /* Белый текст для контраста */
 }
 
 
+/* Цвета заголовков карточек */
+.card-header.bg-main {
+  background-color: var(--main-color) !important;
+}
+
+/* Если нужно изменить все заголовки карточек */
+.card-header {
+  background-color: var(--main-color);
+  color: white;
+}
+
+/* ====================== */
+/* Стили для печати */
+/* Оптимизация отображения при печати страницы */
+/* ====================== */
+/* Стили для печати */
+/* Оптимизация отображения при печати страницы */
+/* ====================== */
 @media print {
+  /* Скрываем ненужные элементы */
   body * {
     visibility: hidden;
   }
-  .card, .card * {
+  
+  /* Показываем только нужные элементы */
+  .container, .container * {
     visibility: visible;
   }
+  
+  /* Скрываем кнопку печати и другие ненужные элементы */
+  .no-print, #print-report, .btn-close, .datepicker {
+    display: none !important;
+  }
+  
+  /* Настраиваем отображение карточек */
   .card {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
-    border: none;
+    margin: 0;
+    padding: 0;
     box-shadow: none;
-  }
-  .table {
-    page-break-after: auto;
-  }
-  .table tr {
+    border: none;
     page-break-inside: avoid;
-    page-break-after: auto;
   }
-  .table td, .table th {
-    padding: 4px;
-    font-size: 12px;
+  
+  /* Настраиваем таблицу */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
   }
-  .no-print {
-    display: none !important;
+  
+  .table th, .table td {
+    padding: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .table thead th {
+    background-color: #f1f1f1 !important;
+    color: #000 !important;
+  }
+  
+  /* Убираем лишние отступы */
+  body, .container {
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Настраиваем заголовок карточки */
+  .card-header {
+    background-color: #f1f1f1 !important;
+    color: #000 !important;
+    padding: 10px;
+  }
+  
+  /* Делаем бейджи черно-белыми */
+  .badge {
+    border: 1px solid #000;
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+  
+  /* Скрываем иконки */
+  .bi {
+    display: none;
   }
 }
+
+
+/* ====================== */
+/* Анимации */
+/* Плавные переходы и эффекты */
+/* ====================== */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.pulse {
+  animation: pulse 1.5s infinite; /* Используется для важных элементов */
