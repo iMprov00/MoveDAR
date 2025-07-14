@@ -130,3 +130,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+
+// Анимация счетчиков
+function animateCounters() {
+  const counters = document.querySelectorAll('.stat-content h3');
+  const speed = 200;
+  
+  counters.forEach(counter => {
+    const target = +counter.innerText;
+    const count = +counter.dataset.count || 0;
+    const increment = target / speed;
+    
+    if (count < target) {
+      counter.innerText = Math.ceil(count + increment);
+      counter.dataset.count = count + increment;
+      setTimeout(animateCounters, 1);
+    } else {
+      counter.innerText = target;
+    }
+  });
+}
+
+// Запускаем при загрузке страницы
+document.addEventListener('DOMContentLoaded', animateCounters);

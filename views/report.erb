@@ -15,10 +15,67 @@
                      value="<%= @selected_date.strftime('%d.%m.%Y') %>"
                      data-url="/report">
             </div>
-            <div class="col-md-6 d-flex align-items-end">
-              <button id="print-report" class="btn btn-outline-secondary">
-                <i class="bi bi-printer me-2"></i>Печать отчета
-              </button>
+                <div class="col-md-6 d-flex align-items-end gap-2">
+                  <a href="/export_excel?date=<%= @selected_date.strftime('%Y-%m-%d') %>" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel me-2"></i>Выгрузить в Excel
+                  </a>
+                  <button id="print-report" class="btn btn-outline-secondary">
+                    <i class="bi bi-printer me-2"></i>Печать отчета
+                  </button>
+                </div>
+
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <div class="stats-grid">
+                <!-- Всего пациентов -->
+                <div class="stat-card bg-primary">
+                  <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                  </div>
+                  <div class="stat-content">
+                    <h3><%= @patients.count %></h3>
+                    <p>Всего пациентов</p>
+                  </div>
+                </div>
+                
+                <!-- Зарегистрированы -->
+                <div class="stat-card bg-success">
+                  <div class="stat-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                  <div class="stat-content">
+                    <h3><%= @registered_count %></h3>
+                    <p>Зарегистрированы</p>
+                    <small><%= (@registered_count.to_f / @patients.count * 100).round(1) %>% от общего числа</small>
+                  </div>
+                </div>
+                
+                <!-- Приняты врачом -->
+                <div class="stat-card bg-info">
+                  <div class="stat-icon">
+                    <i class="bi bi-heart-pulse"></i>
+                  </div>
+                  <div class="stat-content">
+                    <h3><%= @visited_count %></h3>
+                    <p>Приняты врачом</p>
+                    <small><%= (@visited_count.to_f / @patients.count * 100).round(1) %>% от общего числа</small>
+                  </div>
+                </div>
+                
+                <!-- Не пришли -->
+                <div class="stat-card bg-warning text-dark">
+                  <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                  </div>
+                  <div class="stat-content">
+                    <h3><%= @not_registered_count %></h3>
+                    <p>Не зарегистрированы</p>
+                    <small><%= (@not_registered_count.to_f / @patients.count * 100).round(1) %>% от общего числа</small>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

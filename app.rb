@@ -3,6 +3,7 @@ require 'sinatra/activerecord'
 require 'roo'
 require 'roo-xls'
 require 'date'
+require 'axlsx'
 
 # Подключение к базе данных
 set :database, {adapter: "sqlite3", database: "hospitalization.db"}
@@ -235,5 +236,51 @@ end
 get '/report' do
   @selected_date = params[:selected_date] ? Date.parse(params[:selected_date]) : Date.today
   @patients = Appointment.where(appointment_date: @selected_date).order(:appointment_time)
+
+    # Статистика
+  @registered_count = @patients.where.not(registered_at: nil).count
+  @visited_count = @patients.where.not(doctor_visited_at: nil).count
+  @not_registered_count = @patients.where(registered_at: nil).count
   erb :report
+end
+
+
+
+# Экспорт в Excel
+get '/export_excel' do
+  date = params[:date] ? Date.parse(params[:date]) : Date.today
+  patients = Appointment.where(appointment_date: date).order(:appointment_time)
+  
+  content_type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  headers['Content-Disposition'] = "attachment; filename=patients_#{date.strftime('%Y-%m-%d')}.xlsx"
+  
+  # Создаем Excel файл
+  pkg = Axlsx::Package.new
+  wb = pkg.workbook
+  
+  wb.add_worksheet(name: "Пациенты #{date.strftime('%d.%m.%Y')}") do |sheet|
+    # Заголовки
+    sheet.add_row [
+      '№', 'ФИО пациента', 'Запланированное время', 
+      'Время регистрации', 'Время приема у врача', 'Статус', 'Примечания'
+    ]
+    
+    # Данные
+    patients.each_with_index do |patient, index|
+      sheet.add_row [
+        index + 1,
+        patient.full_name,
+        patient.appointment_time,
+        patient.registration_time&.strftime('%H:%M:%S') || 'Не зарегистрирован',
+        patient.doctor_visit_time&.strftime('%H:%M:%S') || 'Не принят',
+        patient.doctor_visited_at ? 'Прием завершен' : (patient.registered_at ? 'Ожидает врача' : 'Не зарегистрирован'),
+        patient.doctor_notes
+      ]
+    end
+    
+    # Итого
+    sheet.add_row ['Итого:', '', '', '', '', '', "#{patients.count} пациентов"]
+  end
+  
+  pkg.to_stream.read
 end
