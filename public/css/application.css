@@ -367,6 +367,27 @@ body {
   }
 }
 
+/* Стили для формы добавления */
+#addPatientForm {
+  transition: all 0.3s ease;
+}
+
+/* Анимация появления формы */
+.collapsing {
+  transition: height 0.3s ease;
+}
+
+/* Стиль для кнопки добавления */
+.btn-outline-primary {
+  border-color: var(--main-color);
+  color: var(--main-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--main-color);
+  color: white;
+}
+
 * Стили для Select2 */
 .select2-container--default .select2-selection--single {
   border: 1px solid #ced4da;

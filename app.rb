@@ -191,6 +191,28 @@ end
 
 
 
+post '/add_patient_manually' do
+  begin
+    appointment_date = Date.strptime(params[:appointment_date], '%d.%m.%Y')
+    
+    # Создаем запись без данных о регистрации
+    patient = Appointment.create(
+      full_name: params[:full_name],
+      appointment_time: params[:appointment_time],
+      appointment_date: appointment_date
+      # Не указываем registration_time и registered_at
+    )
+    
+    session[:success_message] = "Пациент #{params[:full_name]} успешно добавлен и ожидает регистрации"
+  rescue => e
+    session[:error_message] = "Ошибка при добавлении пациента: #{e.message}"
+  end
+  
+  redirect "/registration?selected_date=#{params[:selected_date]}"
+end
+
+
+
 
 
 # Страница кабинета врача
