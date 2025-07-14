@@ -367,7 +367,37 @@ body {
   }
 }
 
+* Стили для Select2 */
+.select2-container--default .select2-selection--single {
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  height: auto;
+  padding: 0.5rem 1rem;
+}
 
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+  background-color: var(--main-color);
+}
+
+.select2-container--default .select2-results__option--selected {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.select2-dropdown {
+  border: 1px solid #ced4da;
+  border-radius: 0 0 8px 8px;
+}
 
 /* ====================== */
 /* Стили для печати */

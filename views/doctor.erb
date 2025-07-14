@@ -45,14 +45,14 @@
               <div class="row g-3 mb-4">
                 <div class="col-md-6">
                   <label for="patient-select" class="form-label">Пациент</label>
-                  <select class="form-select" id="patient-select" name="patient_id" required>
-                    <option value="">Выберите пациента</option>
-                    <% @patients.each do |patient| %>
-                      <option value="<%= patient.id %>">
-                        <%= patient.full_name %> (зарегистрирован в <%= patient.registration_time %>)
-                      </option>
-                    <% end %>
-                  </select>
+                <select class="form-select patient-select" id="patient-select" name="patient_id" required>
+                  <option value="">Выберите пациента</option>
+                  <% @patients.each do |patient| %>
+                    <option value="<%= patient.id %>">
+                      <%= patient.full_name %> (<%= patient.registration_time&.strftime('%H:%M') || 'не зарегистрирован' %>)
+                    </option>
+                  <% end %>
+                </select>
                 </div>
                 
                 <div class="col-md-6">

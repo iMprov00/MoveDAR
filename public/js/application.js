@@ -154,3 +154,26 @@ function animateCounters() {
 
 // Запускаем при загрузке страницы
 document.addEventListener('DOMContentLoaded', animateCounters);
+
+
+// Инициализация Select2 для всех полей выбора пациентов
+document.addEventListener('DOMContentLoaded', function() {
+  $('.patient-select').select2({
+    language: 'ru',
+    placeholder: 'Начните вводить имя пациента',
+    allowClear: true,
+    width: '100%',
+    minimumInputLength: 1, // Минимальное количество символов для поиска
+    sorter: function(data) {
+      // Сортировка результатов поиска
+      return data.sort(function(a, b) {
+        return a.text.localeCompare(b.text);
+      });
+    }
+  });
+  
+  // Для правильной работы в модальных окнах (если используются)
+  $(document).on('select2:open', () => {
+    document.querySelector('.select2-search__field').focus();
+  });
+});
