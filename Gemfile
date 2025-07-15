@@ -1,18 +1,17 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "sinatra"
-gem "sinatra-reloader"
-gem "sqlite3"
-gem "activerecord"
-gem "sinatra-activerecord"
-gem "sinatra-contrib"
-gem "rake"
-gem 'axlsx', '~> 3.0'
+# Основные гемы
+gem 'sinatra'
+gem 'sinatra-activerecord'
+gem 'sqlite3'
+
+# Для работы с Excel
+gem 'caxlsx'
 gem 'roo'
 gem 'roo-xls'
-gem 'caxlsx' 
-gem 'rack-flash3'
 
-group :development do 
-	gem "tux"
+# Для разработки
+group :development do
+  gem 'rerun' # Автоматическая перезагрузка сервера при изменениях
+  gem 'pry'   # Интерактивная консоль для отладки
 end

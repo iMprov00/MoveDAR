@@ -3,7 +3,7 @@ require 'sinatra/activerecord'
 require 'roo'
 require 'roo-xls'
 require 'date'
-require 'axlsx'
+require 'caxlsx'
 
 # Подключение к базе данных
 set :database, {adapter: "sqlite3", database: "hospitalization.db"}
